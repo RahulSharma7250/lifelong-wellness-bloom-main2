@@ -3,7 +3,7 @@ import Footer from "@/components/Footer"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { GraduationCap, Heart, Award, Users } from "lucide-react"
-import drMeghaPortrait from "@/assets/dr-megha-portrait.jpg"
+import DoctorImage from "@/assets/doctor.jpg"
 
 const About = () => {
   const education = [
@@ -63,7 +63,7 @@ const About = () => {
                 </div>
                 <div className="relative">
                   <img 
-                    src={drMeghaPortrait} 
+                    src={DoctorImage} 
                     alt="Dr. Megha Shaha" 
                     className="w-full max-w-md mx-auto rounded-2xl shadow-elegant"
                   />

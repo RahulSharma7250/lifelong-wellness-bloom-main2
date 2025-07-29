@@ -1,8 +1,30 @@
-import { Heart, Mail, MessageCircle, Instagram, Youtube, Phone } from "lucide-react"
+import { Heart, Mail, MessageCircle, Instagram, Youtube, Phone, Facebook } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import lotusSymbol from "@/assets/lotus-symbol.jpg"
+import LogoImage from "@/assets/logo.png"
+import { FaGoogle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 
 const Footer = () => {
+  const navigate = useNavigate();
+  
+  // Social media links
+  const socialLinks = {
+    facebook: "https://www.facebook.com/share/18WfXH6g4m/",
+    instagram: "https://www.instagram.com/megha_shaha83?igsh=d3ZicGhjZXE0czZ4",
+    youtube: "https://youtube.com/@meghashaha1156?si=fePkXyIeNJDhiesm",
+    googleBusiness: "https://g.co/kgs/ezHLMBB"
+  };
+
+  // WhatsApp function
+  const openWhatsApp = () => {
+    window.open(`https://wa.me/919421069326`, '_blank');
+  };
+
+  // Navigate to contact page
+  const goToContactPage = () => {
+    navigate('/contact');
+  };
+
   return (
     <footer className="bg-gradient-to-t from-muted/50 to-background border-t border-border/50">
       <div className="container mx-auto px-4 py-12">
@@ -10,7 +32,7 @@ const Footer = () => {
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <img src={lotusSymbol} alt="Lifelong Wellness" className="w-10 h-10 rounded-full" />
+              <img src={LogoImage} alt="Lifelong Wellness" className="w-12 h-12 rounded-full" /> {/* Increased size */}
               <div>
                 <h3 className="font-serif font-semibold text-lg">Lifelong Wellness</h3>
                 <p className="text-sm text-muted-foreground">Dr. Megha Shaha</p>
@@ -59,26 +81,70 @@ const Footer = () => {
             <div className="space-y-4">
               <div className="flex items-center gap-3 text-muted-foreground">
                 <Mail className="w-4 h-4 text-primary" />
-                <span className="text-sm">info@lifelongwellness.in</span>
+                <span className="text-sm">meghahshaha@gmail.com</span>
               </div>
               
               <div className="space-y-2">
-                <Button variant="wellness" size="sm" className="w-full justify-start">
+                <Button 
+                  variant="wellness" 
+                  size="sm" 
+                  className="w-full justify-start"
+                  onClick={openWhatsApp}
+                >
                   <MessageCircle className="w-4 h-4" />
                   WhatsApp Support
                 </Button>
-                <Button variant="outline" size="sm" className="w-full justify-start">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full justify-start"
+                  onClick={goToContactPage}
+                >
                   <Phone className="w-4 h-4" />
                   Book Consultation
                 </Button>
               </div>
 
               <div className="flex gap-3">
-                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-secondary-accent">
-                  <Instagram className="w-5 h-5" />
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="text-muted-foreground hover:text-blue-600" 
+                  asChild
+                >
+                  <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer">
+                    <Facebook className="w-5 h-5" />
+                  </a>
                 </Button>
-                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-secondary-accent">
-                  <Youtube className="w-5 h-5" />
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="text-muted-foreground hover:text-pink-600" 
+                  asChild
+                >
+                  <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer">
+                    <Instagram className="w-5 h-5" />
+                  </a>
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="text-muted-foreground hover:text-red-600" 
+                  asChild
+                >
+                  <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer">
+                    <Youtube className="w-5 h-5" />
+                  </a>
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="text-muted-foreground hover:text-blue-500" 
+                  asChild
+                >
+                  <a href={socialLinks.googleBusiness} target="_blank" rel="noopener noreferrer">
+                    <FaGoogle className="w-5 h-5" />
+                  </a>
                 </Button>
               </div>
             </div>

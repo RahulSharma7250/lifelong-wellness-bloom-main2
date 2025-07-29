@@ -1,3 +1,7 @@
+"use client"
+
+import type React from "react"
+
 import Navigation from "@/components/Navigation"
 import Footer from "@/components/Footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -6,56 +10,89 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import { 
-  MapPin, 
-  Phone, 
-  Mail, 
-  Clock, 
-  MessageSquare,
-  Calendar,
-  CheckCircle
-} from "lucide-react"
+import { MapPin, Phone, Mail, Clock, MessageSquare, Calendar, CheckCircle } from "lucide-react"
 import { useState } from "react"
 import { useToast } from "@/hooks/use-toast"
 
 const Contact = () => {
   const { toast } = useToast()
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
     surname: "",
     email: "",
     phone: "",
     consultationType: "",
-    message: ""
+    message: "",
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    toast({
-      title: "Consultation Request Sent!",
-      description: "We'll contact you within 24 hours to schedule your free consultation.",
-    })
-    setFormData({
-      name: "",
-      surname: "",
-      email: "",
-      phone: "",
-      consultationType: "",
-      message: ""
-    })
+    setIsSubmitting(true)
+
+    try {
+      const fullName = `${formData.name} ${formData.surname}`.trim()
+      const submitData = {
+        fullName,
+        email: formData.email,
+        phone: formData.phone,
+        consultationType: formData.consultationType,
+        message: formData.message,
+        type: "contact",
+      }
+
+      console.log("Submitting contact form:", submitData)
+
+      const response = await fetch("http://localhost:3001/api/send-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(submitData),
+      })
+
+      const data = await response.json()
+
+      if (response.ok && data.success) {
+        toast({
+          title: "🎉 Success!",
+          description:
+            "Your message has been sent successfully. We'll respond within 2 hours. Check your email for confirmation!",
+        })
+        setFormData({
+          name: "",
+          surname: "",
+          email: "",
+          phone: "",
+          consultationType: "",
+          message: "",
+        })
+      } else {
+        throw new Error(data.message || "Failed to send message")
+      }
+    } catch (error) {
+      console.error("Contact form error:", error)
+      toast({
+        title: "❌ Error",
+        description: error instanceof Error ? error.message : "Failed to send message. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }))
   }
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
+
       <main className="pt-16">
         {/* Hero Section */}
         <section className="py-20 bg-gradient-to-br from-background via-secondary/20 to-background">
@@ -63,11 +100,14 @@ const Contact = () => {
             <div className="max-w-4xl mx-auto text-center">
               <Badge className="mb-4">Get In Touch</Badge>
               <h1 className="font-serif text-4xl md:text-5xl font-bold mb-6">
-                Let's Start Your <span className="bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">Healing Journey</span>
+                Let's Start Your{" "}
+                <span className="bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
+                  Healing Journey
+                </span>
               </h1>
               <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-                Ready to transform your health naturally? Get in touch to schedule your 
-                free consultation and discover how we can help you achieve lasting wellness.
+                Ready to transform your health naturally? Get in touch to schedule your free consultation and discover
+                how we can help you achieve lasting wellness.
               </p>
             </div>
           </div>
@@ -83,8 +123,8 @@ const Contact = () => {
                   <div>
                     <h2 className="font-serif text-3xl font-bold mb-6">Get In Touch</h2>
                     <p className="text-muted-foreground mb-8 leading-relaxed">
-                      We're here to support you on your wellness journey. Reach out through 
-                      any of these channels and we'll respond promptly.
+                      We're here to support you on your wellness journey. Reach out through any of these channels and
+                      we'll respond promptly.
                     </p>
                   </div>
 
@@ -98,7 +138,7 @@ const Contact = () => {
                           </div>
                           <div>
                             <h3 className="font-semibold mb-1">Phone</h3>
-                            <p className="text-muted-foreground">+91 94210 69326 </p>
+                            <p className="text-muted-foreground">+91 94210 69326</p>
                             <p className="text-sm text-primary">Call for immediate assistance</p>
                           </div>
                         </div>
@@ -113,7 +153,7 @@ const Contact = () => {
                           </div>
                           <div>
                             <h3 className="font-semibold mb-1">WhatsApp</h3>
-                            <p className="text-muted-foreground">+91 94210 69326 </p>
+                            <p className="text-muted-foreground">+91 94210 69326</p>
                             <p className="text-sm text-secondary-accent">24x7 Support Available</p>
                           </div>
                         </div>
@@ -128,7 +168,7 @@ const Contact = () => {
                           </div>
                           <div>
                             <h3 className="font-semibold mb-1">Email</h3>
-                            <p className="text-muted-foreground">hello@lifelongwellness.com</p>
+                            <p className="text-muted-foreground">meghahshaha@gmail.com</p>
                             <p className="text-sm text-accent-warm">We respond within 2 hours</p>
                           </div>
                         </div>
@@ -192,6 +232,7 @@ const Contact = () => {
                               value={formData.name}
                               onChange={handleChange}
                               className="mt-1"
+                              disabled={isSubmitting}
                             />
                           </div>
                           <div>
@@ -204,6 +245,7 @@ const Contact = () => {
                               value={formData.surname}
                               onChange={handleChange}
                               className="mt-1"
+                              disabled={isSubmitting}
                             />
                           </div>
                         </div>
@@ -218,6 +260,7 @@ const Contact = () => {
                             value={formData.email}
                             onChange={handleChange}
                             className="mt-1"
+                            disabled={isSubmitting}
                           />
                         </div>
 
@@ -231,6 +274,7 @@ const Contact = () => {
                             value={formData.phone}
                             onChange={handleChange}
                             className="mt-1"
+                            disabled={isSubmitting}
                           />
                         </div>
 
@@ -242,7 +286,8 @@ const Contact = () => {
                             required
                             value={formData.consultationType}
                             onChange={handleChange}
-                            className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                            disabled={isSubmitting}
+                            className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                           >
                             <option value="">Select consultation type</option>
                             <option value="online">Online Consultation</option>
@@ -261,12 +306,28 @@ const Contact = () => {
                             className="mt-1"
                             rows={4}
                             placeholder="Tell us about your health concerns or goals..."
+                            disabled={isSubmitting}
                           />
                         </div>
 
-                        <Button type="submit" variant="healing" size="lg" className="w-full">
-                          <CheckCircle className="w-5 h-5" />
-                          Submit Consultation Request
+                        <Button
+                          type="submit"
+                          variant="healing"
+                          size="lg"
+                          className="w-full"
+                          disabled={isSubmitting}
+                        >
+                          {isSubmitting ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                              Sending Message...
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle className="w-5 h-5" />
+                              Submit Consultation Request
+                            </>
+                          )}
                         </Button>
                       </form>
                     </CardContent>
@@ -283,17 +344,13 @@ const Contact = () => {
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12">
                 <h2 className="font-serif text-3xl md:text-4xl font-bold mb-4">Visit Our Clinic</h2>
-                <p className="text-muted-foreground">
-                  Located in the heart of the city for your convenience
-                </p>
+                <p className="text-muted-foreground">Located in the heart of the city for your convenience</p>
               </div>
               <div className="bg-muted rounded-2xl h-96 flex items-center justify-center">
                 <div className="text-center">
                   <MapPin className="w-16 h-16 text-primary mx-auto mb-4" />
                   <h3 className="font-semibold text-lg mb-2">Interactive Map</h3>
-                  <p className="text-muted-foreground">
-                    Google Maps integration would be placed here
-                  </p>
+                  <p className="text-muted-foreground">Google Maps integration would be placed here</p>
                 </div>
               </div>
             </div>

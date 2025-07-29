@@ -1,3 +1,7 @@
+"use client"
+
+import type React from "react"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,35 +13,76 @@ import { useToast } from "@/hooks/use-toast"
 
 const BookingForm = () => {
   const { toast } = useToast()
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
     surname: "",
     email: "",
     phone: "",
     consultationType: "",
-    message: ""
+    message: "",
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    toast({
-      title: "Consultation Request Sent!",
-      description: "We'll contact you within 24 hours to schedule your free consultation.",
-    })
-    setFormData({
-      name: "",
-      surname: "",
-      email: "",
-      phone: "",
-      consultationType: "",
-      message: ""
-    })
+    setIsSubmitting(true)
+
+    try {
+      const fullName = `${formData.name} ${formData.surname}`.trim()
+      const submitData = {
+        fullName,
+        email: formData.email,
+        phone: formData.phone,
+        consultationType: formData.consultationType,
+        message: formData.message,
+        type: "booking",
+      }
+
+      console.log("Submitting booking form:", submitData)
+
+      const response = await fetch("http://localhost:3001/api/send-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(submitData),
+      })
+
+      const data = await response.json()
+
+      if (response.ok && data.success) {
+        toast({
+          title: "🎉 Success!",
+          description:
+            "Your consultation request has been sent. We'll contact you soon. Check your email for confirmation!",
+        })
+        setFormData({
+          name: "",
+          surname: "",
+          email: "",
+          phone: "",
+          consultationType: "",
+          message: "",
+        })
+      } else {
+        throw new Error(data.message || "Failed to send message")
+      }
+    } catch (error) {
+      console.error("Booking form error:", error)
+      toast({
+        title: "❌ Error",
+        description: error instanceof Error ? error.message : "Failed to send message. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }))
   }
 
@@ -47,11 +92,14 @@ const BookingForm = () => {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="font-serif text-3xl md:text-4xl font-bold mb-4">
-              Book Your <span className="bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">Free Consultation</span>
+              Book Your{" "}
+              <span className="bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
+                 Consultation
+              </span>
             </h2>
             <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-              Ready to transform your health naturally? Schedule your personalized consultation 
-              and take the first step towards lasting wellness.
+              Ready to transform your health naturally? Schedule your personalized consultation and take the first step
+              towards lasting wellness.
             </p>
           </div>
 
@@ -63,9 +111,9 @@ const BookingForm = () => {
                 {[
                   "Comprehensive health assessment",
                   "Personalized treatment plan",
-                  "Natural healing roadmap", 
+                  "Natural healing roadmap",
                   "Lifestyle recommendations",
-                  "Ongoing support guidance"
+                  "Ongoing support guidance",
                 ].map((benefit, index) => (
                   <div key={index} className="flex items-center gap-3">
                     <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
@@ -84,7 +132,7 @@ const BookingForm = () => {
                 </p>
                 <Button variant="outline" size="sm">
                   <Phone className="w-4 h-4" />
-                  Call +91 98765 43210
+                  Call +91 94210 69326
                 </Button>
               </div>
             </div>
@@ -101,7 +149,9 @@ const BookingForm = () => {
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="name" className="text-sm">First Name *</Label>
+                      <Label htmlFor="name" className="text-sm">
+                        First Name *
+                      </Label>
                       <Input
                         id="name"
                         name="name"
@@ -110,10 +160,13 @@ const BookingForm = () => {
                         value={formData.name}
                         onChange={handleChange}
                         className="mt-1"
+                        disabled={isSubmitting}
                       />
                     </div>
                     <div>
-                      <Label htmlFor="surname" className="text-sm">Last Name *</Label>
+                      <Label htmlFor="surname" className="text-sm">
+                        Last Name *
+                      </Label>
                       <Input
                         id="surname"
                         name="surname"
@@ -122,12 +175,15 @@ const BookingForm = () => {
                         value={formData.surname}
                         onChange={handleChange}
                         className="mt-1"
+                        disabled={isSubmitting}
                       />
                     </div>
                   </div>
 
                   <div>
-                    <Label htmlFor="email" className="text-sm">Email Address *</Label>
+                    <Label htmlFor="email" className="text-sm">
+                      Email Address *
+                    </Label>
                     <Input
                       id="email"
                       name="email"
@@ -136,11 +192,14 @@ const BookingForm = () => {
                       value={formData.email}
                       onChange={handleChange}
                       className="mt-1"
+                      disabled={isSubmitting}
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="phone" className="text-sm">Phone Number *</Label>
+                    <Label htmlFor="phone" className="text-sm">
+                      Phone Number *
+                    </Label>
                     <Input
                       id="phone"
                       name="phone"
@@ -149,18 +208,22 @@ const BookingForm = () => {
                       value={formData.phone}
                       onChange={handleChange}
                       className="mt-1"
+                      disabled={isSubmitting}
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="consultationType" className="text-sm">Consultation Type *</Label>
+                    <Label htmlFor="consultationType" className="text-sm">
+                      Consultation Type *
+                    </Label>
                     <select
                       id="consultationType"
                       name="consultationType"
                       required
                       value={formData.consultationType}
                       onChange={handleChange}
-                      className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      disabled={isSubmitting}
+                      className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <option value="">Select type</option>
                       <option value="online">Online Consultation</option>
@@ -170,7 +233,9 @@ const BookingForm = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="message" className="text-sm">Message</Label>
+                    <Label htmlFor="message" className="text-sm">
+                      Message
+                    </Label>
                     <Textarea
                       id="message"
                       name="message"
@@ -179,12 +244,22 @@ const BookingForm = () => {
                       className="mt-1"
                       rows={3}
                       placeholder="Tell us about your health goals..."
+                      disabled={isSubmitting}
                     />
                   </div>
 
-                  <Button type="submit" variant="healing" size="lg" className="w-full">
-                    <CheckCircle className="w-5 h-5" />
-                    Book Free Consultation
+                  <Button type="submit" variant="healing" size="lg" className="w-full" disabled={isSubmitting}>
+                    {isSubmitting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Sending Request...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="w-5 h-5" />
+                        Book Consultation
+                      </>
+                    )}
                   </Button>
                 </form>
               </CardContent>

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Award, Heart, Users, Target } from "lucide-react"
-import drMeghaPortrait from "@/assets/dr-megha-portrait.jpg"
+import DoctorImage from "@/assets/doctor.jpg"
 
 const AboutSection = () => {
   return (
@@ -12,7 +12,7 @@ const AboutSection = () => {
           <div className="relative">
             <div className="relative w-full max-w-md mx-auto">
               <img 
-                src={drMeghaPortrait} 
+                src={DoctorImage} 
                 alt="Dr. Megha Shaha" 
                 className="w-full h-auto rounded-2xl shadow-warm"
               />
