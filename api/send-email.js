@@ -85,7 +85,7 @@ const createEmailTemplate = (data, type) => {
               ? `
           <div class="field">
             <div class="field-label">Message / Health Concerns</div>
-            <div class="field-value">${data.message}</div>
+            <div class="field-value">${dta.message}</div>
           </div>
           `
               : ""
