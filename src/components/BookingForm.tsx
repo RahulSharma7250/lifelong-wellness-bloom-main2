@@ -40,7 +40,12 @@ const BookingForm = () => {
 
       console.log("Submitting booking form:", submitData)
 
-      const response = await fetch("http://localhost:3001/api/send-email", {
+      // Use relative URL for API calls - works in both development and production
+      const apiUrl = process.env.NODE_ENV === 'development' 
+        ? "http://localhost:3001/api/send-email"
+        : "/api/send-email"
+      
+      const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

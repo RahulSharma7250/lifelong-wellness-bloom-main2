@@ -52,6 +52,7 @@ const HeroSection = () => {
         })
       }
     } catch (error) {
+      console.error("Hero section form error:", error)
       toast({
         title: "Error",
         description: "Failed to send consultation request. Please try again.",

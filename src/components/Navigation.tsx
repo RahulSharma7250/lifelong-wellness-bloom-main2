@@ -72,6 +72,7 @@ const Navigation = () => {
         })
       }
     } catch (error) {
+      console.error("Navigation form error:", error)
       toast({
         title: "Error",
         description: "Failed to send call request. Please try again.",
